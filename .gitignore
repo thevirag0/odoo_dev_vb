@@ -1,0 +1,37 @@
+# ----------------------------------------------------------------
+# IGNORAR TODOS LOS DATOS PERSISTENTES (¡MUY IMPORTANTE!)
+# ----------------------------------------------------------------
+
+# Ignorar los datos de la base de datos PostgreSQL
+/data/dataPostgreSQL/
+
+# Ignorar el filestore de Odoo (adjuntos, imágenes, etc.)
+/data/odoo/filestore/
+
+# Ignorar las sesiones de Odoo
+/data/odoo/sessions/
+
+# Ignorar la carpeta de backups de la base de datos
+/data/backups/
+
+# ----------------------------------------------------------------
+# PERMITIR ARCHIVO DE PAQUETE (copia de seguridad de los datos)
+# ----------------------------------------------------------------
+
+# La ! indica que NO debe ignorar este archivo específico, 
+# aunque esté en una carpeta ignorada (aunque en este caso lo pondremos en la raíz)
+!odoo_data_package.tar.gz
+
+# ----------------------------------------------------------------
+# Archivos de sistema y Python
+# ----------------------------------------------------------------
+
+# Ignorar archivos compilados de Python
+__pycache__/
+*.pyc
+
+# Ignorar archivos de sistema operativo
+.DS_Store
+
+# Ignorar carpetas de IDEs (opcional pero recomendado)
+.vscode/

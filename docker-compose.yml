@@ -1,0 +1,55 @@
+services:
+#Definimos el servicio Web, en este caso Odoo
+  odoo_dev_dam:
+    #Indicamos que imagen de Docker Hub utilizaremos
+    image: odoo:19
+    container_name: odoo_dev_dam
+    #Indicamos que depende de "db", por lo cual debe ser procesada primero "db"
+    depends_on:
+        - postgres_dev_dam
+
+    # Port Mapping: indicamos que el puerto 8069 del contenedor se mapeara con el mismo puerto en el anfritrion
+    # Permitiendo acceder a Odoo mediante http://localhost:8069
+    ports:
+      - 8069:8069
+
+    # Mapeamos el directorio de los contenedores (como por ejemplo" /mnt/extra-addons" )
+    # en un directorio local (como por ejemplo en un directorio "./volumesOdoo/addons")
+    # situado en el lugar donde ejecutemos "Docker compose"
+    volumes:
+      - ./data/addons:/mnt/extra-addons
+      - ./data/odoo_config:/etc/odoo
+      - ./data/odoo/filestore:/var/lib/odoo/filestore
+      - ./data/odoo/sessions:/var/lib/odoo/sessions
+    #Indicamos que el contenedor funcionara con usuario root y no con usuario odoo
+    user: root
+    # Definimos variables de entorno de Odoo
+    environment:
+      - HOST=postgres_dev_dam
+      - USER=odoo
+      - PASSWORD=odoo
+    # Indica que pasa ese parametro al arrancar el servicio Odoo
+    command: -c /etc/odoo/odoo.conf --dev=all  
+    networks:
+      - network_dev_dam
+
+#Definimos el servicio de la base de datos
+  postgres_dev_dam:
+    image: postgres:15
+    container_name: postgres_dev_dam
+    # Definimos variables de entorno de PostgreSQL
+    environment:
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+      - POSTGRES_DB=postgres
+    # Mapeamos el directorio del contenedor "var/lib/postgresql/data" en un directorio "./volumesOdoo/dataPostgreSQL"
+    # situado en el lugar donde ejecutemos "Docker compose"
+    volumes:
+      - ./data/dataPostgreSQL:/var/lib/postgresql/data
+      - ./data/backups:/backups                                    # Para guardar backups de la base de datos directamente
+    networks:
+      - network_dev_dam
+
+networks:
+  network_dev_dam:
+    driver: bridge
