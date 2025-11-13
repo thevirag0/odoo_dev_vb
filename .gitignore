@@ -20,7 +20,7 @@
 
 # La ! indica que NO debe ignorar este archivo específico, 
 # aunque esté en una carpeta ignorada (aunque en este caso lo pondremos en la raíz)
-!odoo_data_package.tar.gz
+!/data/backups/odoo_data_package.tar.gz
 
 # ----------------------------------------------------------------
 # Archivos de sistema y Python
