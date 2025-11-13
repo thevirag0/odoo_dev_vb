@@ -38,7 +38,7 @@ echo "======================================================="
 # 6. Añadir archivos al staging
 echo "-> Añadiendo el nuevo paquete de datos y todos los cambios de código a Git..."
 # Añade el paquete y cualquier cambio en addons, odoo.conf o docker-compose.yml
-git add $PKG_PATH .
+git add .
 
 # 7. Realizar el commit
 FECHA_BACKUP=$(date +"%Y-%m-%d %H:%M:%S")
@@ -46,8 +46,8 @@ echo "-> Creando commit..."
 git commit -m "BACKUP AUTOMÁTICO - Datos y código actualizados al $FECHA_BACKUP"
 
 # 8. Subir a GitHub
-echo "-> Subiendo a GitHub (rama main)..."
-git push origin main
+echo "-> Subiendo a GitHub..."
+git push 
 
 if [ $? -eq 0 ]; then
     echo "======================================================="

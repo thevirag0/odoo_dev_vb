@@ -12,7 +12,7 @@
 /data/odoo/sessions/
 
 # Ignorar la carpeta de backups de la base de datos
-/data/backups/
+# /data/backups/
 
 # ----------------------------------------------------------------
 # PERMITIR ARCHIVO DE PAQUETE (copia de seguridad de los datos)
@@ -20,7 +20,7 @@
 
 # La ! indica que NO debe ignorar este archivo específico, 
 # aunque esté en una carpeta ignorada (aunque en este caso lo pondremos en la raíz)
-!/data/backups/odoo_data_package.tar.gz
+#!./data/backups/odoo_data_package.tar.gz
 
 # ----------------------------------------------------------------
 # Archivos de sistema y Python
