@@ -6,7 +6,7 @@ echo "    PASO 1: INICIANDO COPIA DE SEGURIDAD LOCAL"
 echo "======================================================="
 
 # Definimos la ruta del paquete para facilitar la actualización
-PKG_PATH="data/backups/odoo_data_package.tar.gz"
+PKG_PATH="scripts/odoo_data_package.tar.gz"
 
 # 1. Detener los servicios para garantizar la integridad de los datos
 echo "-> Deteniendo contenedores..."
@@ -46,7 +46,8 @@ echo "-> Creando commit..."
 git commit -m "BACKUP AUTOMÁTICO - Datos y código actualizados al $FECHA_BACKUP"
 
 # 8. Subir a GitHub
-echo "-> Subiendo a GitHub..."
+echo "-> Subiendo a GitHub.... Falta hacer un git push"
+exit
 git push 
 
 if [ $? -eq 0 ]; then

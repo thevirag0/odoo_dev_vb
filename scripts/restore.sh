@@ -6,7 +6,7 @@ echo "    INICIANDO RESTAURACIÓN Y SETUP"
 echo "======================================================="
 
 # Definimos la ruta del paquete para facilitar la actualización
-PKG_PATH="data/backups/odoo_data_package.tar.gz"
+PKG_PATH="scripts/odoo_data_package.tar.gz"
 
 # 1. Verificar si el paquete de datos existe
 if [ ! -f $PKG_PATH ]; then
