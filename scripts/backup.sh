@@ -6,8 +6,8 @@ echo "    PASO 1: INICIANDO COPIA DE SEGURIDAD LOCAL"
 echo "======================================================="
 
 # Nombres según tu último docker-compose.yml
-PG_CONTAINER="postgres_dev_dam"             # Nombre del contenedor de Postgres
-ODOO_CONTAINER="odoo_dev_dam"               # Nombre del contenedor de Odoo
+PG_CONTAINER="postgres_dev_vb"             # Nombre del contenedor de Postgres
+ODOO_CONTAINER="odoo_dev_vb"               # Nombre del contenedor de Odoo
 PG_USER="odoo"                              # Usuario de la BD Postgres
 DB_NAME="odoo"                              # Nombre de la BD a respaldar 
 BACKUP_DIR="./data/backups"                 # Directorio de backups en el host

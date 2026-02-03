@@ -3,8 +3,8 @@
 # Restauración segura de la BD Odoo desde un dump SQL plano (nombre fijo)
 # Funciona tanto si los servicios estaban en 'stop' como si se hizo 'down' antes.
 
-PG_CONTAINER="postgres_dev_dam"             # Nombre del contenedor de Postgres
-ODOO_CONTAINER="odoo_dev_dam"               # Nombre del contenedor de Odoo
+PG_CONTAINER="postgres_dev_vb"             # Nombre del contenedor de Postgres
+ODOO_CONTAINER="odoo_dev_vb"               # Nombre del contenedor de Odoo
 PG_USER="odoo"                              # Usuario de la BD Postgres
 DB_NAME="odoo"                              # Nombre de la BD a respaldar 
 BACKUP_DIR="./data/backups"                 # Directorio de backups en el host
