@@ -1,12 +1,12 @@
 services:
 #Definimos el servicio Web, en este caso Odoo
-  odoo_dev_dam:
+  odoo_dev_vb:
     #Indicamos que imagen de Docker Hub utilizaremos
     image: odoo:19
-    container_name: odoo_dev_dam
+    container_name: odoo_dev_vb
     #Indicamos que depende de "db", por lo cual debe ser procesada primero "db"
     depends_on:
-        - postgres_dev_dam
+        - postgres_dev_vb
 
     # Port Mapping: indicamos que el puerto 8069 del contenedor se mapeara con el mismo puerto en el anfritrion
     # Permitiendo acceder a Odoo mediante http://localhost:8069
@@ -25,18 +25,18 @@ services:
     user: root
     # Definimos variables de entorno de Odoo
     environment:
-      - HOST=postgres_dev_dam
+      - HOST=postgres_dev_vb
       - USER=odoo
       - PASSWORD=odoo
     # Indica que pasa ese parametro al arrancar el servicio Odoo
     command: -c /etc/odoo/odoo.conf --dev=all  
     networks:
-      - network_dev_dam
+      - network_dev_vb
 
 #Definimos el servicio de la base de datos
-  postgres_dev_dam:
+  postgres_dev_vb:
     image: postgres:15
-    container_name: postgres_dev_dam
+    container_name: postgres_dev_vb
     # Permitiendo acceder a la base de datos desde el host
     ports:
       - 5432:5432
@@ -52,11 +52,11 @@ services:
       - ./data/dataPostgreSQL:/var/lib/postgresql/data
       - ./data/backups:/backups                                    # Para guardar backups de la base de datos directamente
     networks:
-      - network_dev_dam
+      - network_dev_vb
 
 volumes:
   postgres_data_volume:
 
 networks:
-  network_dev_dam:
+  network_dev_vb:
     driver: bridge
