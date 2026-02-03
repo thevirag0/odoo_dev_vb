@@ -4,12 +4,11 @@
 
     <record model="ir.ui.view" id="gestion_restaurante_valeria.list">
       <field name="name">GestionRestauranteValeria list</field>
-      <field name="model">gestion_restaurante_valeria.gestion_restaurante_valeria</field>
+      <field name="model">gestion_restaurante_valeria.platos</field>
       <field name="arch" type="xml">
         <list>
           <field name="name"/>
           <field name="value"/>
-          <field name="value2"/>
         </list>
       </field>
     </record>
@@ -19,7 +18,7 @@
 
     <record model="ir.actions.act_window" id="gestion_restaurante_valeria.action_window">
       <field name="name">GestionRestauranteValeria window</field>
-      <field name="res_model">gestion_restaurante_valeria.gestion_restaurante_valeria</field>
+      <field name="res_model">gestion_restaurante_valeria.platos</field>
       <field name="view_mode">list,form</field>
     </record>
 
@@ -28,7 +27,7 @@
 
     <record model="ir.actions.server" id="gestion_restaurante_valeria.action_server">
       <field name="name">GestionRestauranteValeria server</field>
-      <field name="model_id" ref="model_gestion_restaurante_valeria_gestion_restaurante_valeria"/>
+      <field name="model_id" ref="model_gestion_restaurante_valeria_platos"/>
       <field name="state">code</field>
       <field name="code">
         action = {
