@@ -26,7 +26,7 @@ Módulo que servirá de plantilla para el proyecto.
         'views/templates.xml',
     ],
     'installable': True,
-    'application': False,
+    'application': True,
     'auto_install': False,
     # only loaded in demonstration mode
     'demo': [
