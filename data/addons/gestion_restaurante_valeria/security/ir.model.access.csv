@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_gestion_restaurante_valeria_platos,Acceso Platos,model_gestion_restaurante_valeria_platos,base.group_user,1,1,1,1
+access_gestion_restaurante_valeria_plato,Acceso Platos,model_gestion_restaurante_valeria_plato,base.group_user,1,1,1,1

@@ -1,29 +1,29 @@
 <odoo>
     <data>
 
-          <record id="object0" model="gestion_restaurante_valeria.platos">
-            <field name="name">Object 0</field>
-            <field name="value">0</field>
+          <record id="object0" model="gestion_restaurante_valeria.plato">
+            <field name="name">Ensalada César</field>
+            <field name="description">Lechuga, pollo, queso, aderezo César</field>
           </record>
 
-          <record id="object1" model="gestion_restaurante_valeria.platos">
-            <field name="name">Object 1</field>
-            <field name="value">10</field>
+          <record id="object1" model="gestion_restaurante_valeria.plato">
+            <field name="name">Pizza Margarita</field>
+            <field name="description">Tomate, mozzarella, albahaca</field>
           </record>
 
-          <record id="object2" model="gestion_restaurante_valeria.platos">
-            <field name="name">Object 2</field>
-            <field name="value">20</field>
+          <record id="object2" model="gestion_restaurante_valeria.plato">
+            <field name="name">Lasaña</field>
+            <field name="description">Carne, pasta, salsa bechamel</field>
           </record>
 
-          <record id="object3" model="gestion_restaurante_valeria.platos">
-            <field name="name">Object 3</field>
-            <field name="value">30</field>
+          <record id="object3" model="gestion_restaurante_valeria.plato">
+            <field name="name">Sopa de verduras</field>
+            <field name="description">Zanahoria, papa, calabacín</field>
           </record>
 
-          <record id="object4" model="gestion_restaurante_valeria.platos">
-            <field name="name">Object 4</field>
-            <field name="value">40</field>
+          <record id="object4" model="gestion_restaurante_valeria.plato">
+            <field name="name">Tarta de manzana</field>
+            <field name="description">Manzana, canela, masa quebrada</field>
           </record>
 
     </data>
