@@ -11,10 +11,33 @@
         <list>
           <field name="name"/>
           <field name="description"/>
+          <field name="price"/>
+          <field name="preparation_time"/>
+          <field name="available"/>
+          <field name="category"/>
         </list>
       </field>
     </record>
 
+    <!-- Vista de Formulario -->
+<record model="ir.ui.view" id="gestion_restaurante_valeria_form">
+    <field name="name">gestion_restaurante_valeria.form</field>
+    <field name="model">gestion_restaurante_valeria.plato</field>
+    <field name="arch" type="xml">
+        <form>
+            <sheet>
+                <group>
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="price"/>
+                    <field name="preparation_time"/>
+                    <field name="available"/>
+                    <field name="category"/>
+                </group>
+            </sheet>
+        </form>
+    </field>
+</record>
 
     <!-- actions opening views on models -->
     <!-- la acción de la ventana - define qué hace -->
