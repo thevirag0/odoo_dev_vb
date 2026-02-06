@@ -15,6 +15,8 @@
           <field name="preparation_time"/>
           <field name="available"/>
           <field name="category"/>
+          <field name="menu" widget="many2one"/>
+          <field name="rel_ingredientes" widget="many2many_tags"/>
         </list>
       </field>
     </record>
@@ -26,18 +28,89 @@
     <field name="arch" type="xml">
         <form>
             <sheet>
-                <group>
+                <group col="2">
                     <field name="name"/>
                     <field name="description"/>
                     <field name="price"/>
                     <field name="preparation_time"/>
                     <field name="available"/>
                     <field name="category"/>
+                    <field name="menu" widget="many2one"/>
+                    <field name="rel_ingredientes" widget="many2many_tags"/>
                 </group>
             </sheet>
         </form>
     </field>
 </record>
+
+  <!-- Vista de lista de los menús -->
+  <record model="ir.ui.view" id="menu_list_view">
+    <field name="name">gestion_restaurante_valeria.menu.list </field>
+    <field name="model">gestion_restaurante_valeria.menu</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="name"/>
+        <field name="fecha_inicio"/>
+        <field name="fecha_fin"/>
+        <field name="activo"/>
+      </list>
+    </field>
+  </record>
+
+  <!-- Esto es la vista FORMULARIO de menús -->
+<record model="ir.ui.view" id="menu_form_view">
+  <field name="name">gestion_restaurante_valeria.menu.form</field>
+  <field name="model">gestion_restaurante_valeria.menu</field>
+  <field name="arch" type="xml">
+    <form>
+      <sheet>
+        <group col="2">
+          <field name="name"/>
+          <field name="description"/>
+          <field name="fecha_inicio"/>
+          <field name="fecha_fin"/>
+          <field name="activo"/>
+        </group>
+        <field name="platos" widget="one2many"/>
+      </sheet>
+    </form>
+  </field>
+</record>
+
+<!-- Vista de lista de los ingredientes -->
+  <record model="ir.ui.view" id="ingrediente_list_view">
+    <field name="name">gestion_restaurante_valeria.ingrediente.list </field>
+    <field name="model">gestion_restaurante_valeria.ingrediente</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="name"/>
+        <field name="descripcion"/>
+        <field name="es_alergeno"/>
+      </list>
+    </field>
+  </record>
+
+  <!-- Esto es la vista FORMULARIO de ingredientes -->
+<record model="ir.ui.view" id="ingrediente_form_view">
+  <field name="name">gestion_restaurante_valeria.ingrediente.form</field>
+  <field name="model">gestion_restaurante_valeria.ingrediente</field>
+  <field name="arch" type="xml">
+    <form>
+      <sheet>
+        <!-- "col='2'" significa 2 columnas -->
+        <group col="2">
+          <!-- Cada field es un campo del modelo -->
+          <field name="name"/>
+          <field name="descripcion"/>
+          <field name="es_alergeno"/>
+          <field name="rel_platos" widget="many2many_tags"/>
+        </group>
+      </sheet>
+    </form>
+  </field>
+</record>
+
+
 
     <!-- actions opening views on models -->
     <!-- la acción de la ventana - define qué hace -->
@@ -48,21 +121,23 @@
       <field name="view_mode">list,form</field>
     </record>
 
+    <!-- acción para menú -->
+    <record model="ir.actions.act_window" id="menu_action">
+      <field name="name">Gestión de Menús</field>
+      <field name="res_model">gestion_restaurante_valeria.menu</field>
+      <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- acción para ingrediente -->
+
+    <record model="ir.actions.act_window" id="ingrediente_action">
+      <field name="name">Gestión de Ingredientes</field>
+      <field name="res_model">gestion_restaurante_valeria.ingrediente</field>
+      <field name="view_mode">list,form</field>
+    </record>
 
     <!-- server action to the one above -->
 
-    <record model="ir.actions.server" id="gestion_restaurante_valeria.action_server">
-      <field name="name">GestionRestauranteValeria server</field>
-      <field name="model_id" ref="model_gestion_restaurante_valeria_plato"/>
-      <field name="state">code</field>
-      <field name="code">
-        action = {
-          "type": "ir.actions.act_window",
-          "view_mode": "list,form",
-          "res_model": model._name,
-        }
-      </field>
-    </record>
 
 <!-- botones del menú.-->
     <!-- Top menu item -->
@@ -74,8 +149,16 @@
      <menuitem name="Plato" id="gestion_restaurante_valeria.plato_list" 
      parent="gestion_restaurante_valeria.menu_main" 
      action="gestion_restaurante_valeria.action_window"/>
-    
-    
+    <!--menu de menus-->
+      <menuitem name="Menús"
+                id="menu_menus"
+                parent="gestion_restaurante_valeria.menu_main"
+                action="menu_action"/>
+    <!-- menu de ingredientes -->
+      <menuitem name="Ingredientes"
+                id="menu_ingredientes"
+                parent="gestion_restaurante_valeria.menu_main"
+                action="ingrediente_action"/>    
     <!-- actions -->
 <!--
     <menuitem name="List" id="gestion_restaurante_valeria.menu_1_list" parent="gestion_restaurante_valeria.menu_1"
