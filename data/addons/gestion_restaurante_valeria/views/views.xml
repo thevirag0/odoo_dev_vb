@@ -29,10 +29,19 @@
         <form>
             <sheet>
                 <group col="2">
-                    <field name="name"/>
+                    <!-- col 1 -->
+                    <field name="codigo" readonly="1"/>
+                     <field name="name"/>
                     <field name="description"/>
                     <field name="price"/>
+                    
+                    <!--col2-->
+                    <field name="precio_iva" readonly="1"/>
+                    <field name="descuento"/>
+                    <field name="precio_final" readonly="1"/>
                     <field name="preparation_time"/>
+
+                    <!-- fila siguiente -->
                     <field name="available"/>
                     <field name="category"/>
                     <field name="menu" widget="many2one"/>
@@ -50,6 +59,7 @@
     <field name="arch" type="xml">
       <list>
         <field name="name"/>
+        <field name="precio_total"/>
         <field name="fecha_inicio"/>
         <field name="fecha_fin"/>
         <field name="activo"/>
@@ -67,11 +77,12 @@
         <group col="2">
           <field name="name"/>
           <field name="description"/>
+          <field name="precio_total" readonly="1"/>
           <field name="fecha_inicio"/>
           <field name="fecha_fin"/>
           <field name="activo"/>
         </group>
-        <field name="platos" widget="one2many"/>
+        <field name="platos_ids" widget="one2many"/>
       </sheet>
     </form>
   </field>

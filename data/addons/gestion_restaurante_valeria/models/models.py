@@ -14,12 +14,21 @@ class Plato(models.Model):
         string="Categoría",
         selection=[
             ('entrante', 'Entrante'),
-            ('plato_principal', 'Plato Principal'),
+            ('principal', 'Principal'),
             ('postre', 'Postre'),
             ('bebida', 'Bebida')
         ],
-        default='plato_principal'
+        default='principal'
     )
+    codigo = fields.Char(string="Código", required=True, compute="_get_codigo", readonly=True)
+
+    @api.depends('category')
+    def _get_codigo(self):  
+        for plato in self:
+            if plato.category:
+                plato.codigo = f"{plato.category[:3].upper()}_{plato.id}" 
+            else:
+                plato.codigo = f"PLT_{plato.id}"
     menu = fields.Many2one(
         'gestion_restaurante_valeria.menu',
         string = 'Menú',
@@ -32,6 +41,23 @@ class Plato(models.Model):
         column2 = 'rel_ingredientes',
         string = 'Ingredientes'
     )
+    precio_iva = fields.Float(string = "Precio con IVA", compute="_compute_precio_iva")
+    @api.depends('price')
+    def _compute_precio_iva(self):
+        for plato in self:
+            plato.precio_iva = plato.price * 1.10   
+    descuento = fields.Float(string="Descuento (%)")
+    precio_final = fields.Float(string="Precio Final", compute="_compute_precio_final", store=True)
+    @api.depends('price', 'descuento')
+    def _compute_precio_final(self):
+        for plato in self:
+            if plato.price:
+                if plato.descuento > 0:
+                    plato.precio_final = plato.price * (1 - plato.descuento / 100)
+                else:
+                    plato.precio_final = plato.price
+            else: 
+                plato.precio_final = 0.0
 
 
 class Menu(models.Model):
@@ -43,11 +69,23 @@ class Menu(models.Model):
     fecha_inicio = fields.Date(string="Fecha de inicio", required=True)
     fecha_fin = fields.Date(string="Fecha de final")
     activo = fields.Boolean(string="Activo", default=True)
-    platos = fields.One2many(
+    platos_ids = fields.One2many(
         'gestion_restaurante_valeria.plato',
         'menu',
         string='Platos del Menú'
     )
+    precio_total = fields.Float(string="Precio Total", compute="_compute_precio_total", store=True)
+
+    @api.depends('platos_ids', 'platos_ids.precio_final')
+    def _compute_precio_total(self):
+        for menu in self:
+            if menu.platos_ids:
+                total = 0.0
+                for plato in menu.platos_ids:
+                    total += plato.precio_final
+                menu.precio_total = total
+            else:
+                menu.precio_total = 0.0
     
 class Ingrediente(models.Model):
     _name = 'gestion_restaurante_valeria.ingrediente'
