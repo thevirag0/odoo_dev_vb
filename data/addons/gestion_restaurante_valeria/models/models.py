@@ -1,4 +1,8 @@
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError, UserError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class Plato(models.Model):
@@ -25,29 +29,39 @@ class Plato(models.Model):
     @api.depends('category')
     def _get_codigo(self):  
         for plato in self:
-            if plato.category:
-                plato.codigo = f"{plato.category[:3].upper()}_{plato.id}" 
-            else:
-                plato.codigo = f"PLT_{plato.id}"
+            try:
+                _logger.debug(f"Generando código para plato ID: {plato.id}")
+                if plato.category:
+                    plato.codigo = f"{plato.category[:3].upper()}_{plato.id}" 
+                else:
+                    _logger.warning(f"Plato {plato.id} creado sin categoría")
+                    plato.codigo = f"PLT_{plato.id}"
+                _logger.info(f"Plato '{plato.name}' creado con precio {plato.price}")
+            except Exception as e:
+                raise ValidationError(f"No se pudo generar el código: {str(e)}")
+
     menu = fields.Many2one(
         'gestion_restaurante_valeria.menu',
-        string = 'Menú',
+        string='Menú',
         ondelete='set null'
     )
     rel_ingredientes = fields.Many2many(
-        comodel_name = 'gestion_restaurante_valeria.ingrediente',
-        relation = 'relacion_platos_ingredientes',
-        column1 = 'rel_platos',
-        column2 = 'rel_ingredientes',
-        string = 'Ingredientes'
+        comodel_name='gestion_restaurante_valeria.ingrediente',
+        relation='relacion_platos_ingredientes',
+        column1='rel_platos',
+        column2='rel_ingredientes',
+        string='Ingredientes'
     )
-    precio_iva = fields.Float(string = "Precio con IVA", compute="_compute_precio_iva")
+    precio_iva = fields.Float(string="Precio con IVA", compute="_compute_precio_iva")
+    
     @api.depends('price')
     def _compute_precio_iva(self):
         for plato in self:
             plato.precio_iva = plato.price * 1.10   
+    
     descuento = fields.Float(string="Descuento (%)")
     precio_final = fields.Float(string="Precio Final", compute="_compute_precio_final", store=True)
+    
     @api.depends('price', 'descuento')
     def _compute_precio_final(self):
         for plato in self:
@@ -56,8 +70,24 @@ class Plato(models.Model):
                     plato.precio_final = plato.price * (1 - plato.descuento / 100)
                 else:
                     plato.precio_final = plato.price
-            else: 
+            else:
+                _logger.error(f"Error calculando precio para plato {plato.id}: precio no definido")
                 plato.precio_final = 0.0
+
+    # método para validar precio
+    @api.constrains('price')
+    def _check_price(self):
+        for plato in self:
+            if plato.price < 0:
+                raise ValidationError("El precio no puede ser negativo.")
+
+    # método para validar tiempo de preparación - rangos
+    @api.constrains('preparation_time')
+    def _check_prep_time(self):
+        for plato in self:
+            if plato.preparation_time:
+                if plato.preparation_time < 1 or plato.preparation_time > 240:
+                    raise ValidationError("El tiempo debe ser 1-240 minutos")
 
 
 class Menu(models.Model):
@@ -86,7 +116,23 @@ class Menu(models.Model):
                 menu.precio_total = total
             else:
                 menu.precio_total = 0.0
-    
+
+    # método para validar fechas del menú
+    @api.constrains('fecha_inicio', 'fecha_fin')
+    def _check_fechas(self):
+        for menu in self:
+            if menu.fecha_inicio and menu.fecha_fin:
+                if menu.fecha_fin < menu.fecha_inicio:
+                    raise ValidationError("La fecha fin no puede ser anterior a la de inicio.")
+
+    # validar menu con platos
+    @api.constrains('platos_ids', 'activo')
+    def _check_platos_menu(self):
+        for menu in self:
+            if menu.activo and len(menu.platos_ids) == 0:
+                raise ValidationError("Un menú activo debe tener al menos un plato.")
+
+
 class Ingrediente(models.Model):
     _name = 'gestion_restaurante_valeria.ingrediente'
     _description = 'Modelo para la gestión de los Ingredientes de los platos'
@@ -96,9 +142,9 @@ class Ingrediente(models.Model):
     descripcion = fields.Text(string="Descripción")
     
     rel_platos = fields.Many2many(
-        comodel_name = 'gestion_restaurante_valeria.plato',
-        relation = 'relacion_platos_ingredientes',
-        column1 = 'rel_ingredientes',
-        column2 = 'rel_platos',
-        string = 'Platos que lo contienen'
+        comodel_name='gestion_restaurante_valeria.plato',
+        relation='relacion_platos_ingredientes',
+        column1='rel_ingredientes',
+        column2='rel_platos',
+        string='Platos que lo contienen'
     )
