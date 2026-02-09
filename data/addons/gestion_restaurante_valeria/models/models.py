@@ -14,25 +14,17 @@ class Plato(models.Model):
     price = fields.Float(string="Precio", required=True)
     preparation_time = fields.Integer(string="Tiempo de Preparación (minutos)", required=False, help="Tiempo estimado de preparación del plato")
     available = fields.Boolean(string="Disponible", default=True, required=True, help="Indica si el plato puede ser preparado en este momento")
-    category = fields.Selection(
-        string="Categoría",
-        selection=[
-            ('entrante', 'Entrante'),
-            ('principal', 'Principal'),
-            ('postre', 'Postre'),
-            ('bebida', 'Bebida')
-        ],
-        default='principal'
-    )
+    categoria_id = fields.Many2one('gestion_restaurante_valeria.categoria', string="Categoría", required=True)
+    chef_id = fields.Many2one('gestion_restaurante_valeria.chef', string = 'Chef responsable')
     codigo = fields.Char(string="Código", required=True, compute="_get_codigo", readonly=True)
 
-    @api.depends('category')
+    @api.depends('categoria_id')
     def _get_codigo(self):  
         for plato in self:
             try:
                 _logger.debug(f"Generando código para plato ID: {plato.id}")
-                if plato.category:
-                    plato.codigo = f"{plato.category[:3].upper()}_{plato.id}" 
+                if plato.categoria_id:
+                    plato.codigo = f"{plato.categoria_id.name[:3].upper()}_{plato.id}" 
                 else:
                     _logger.warning(f"Plato {plato.id} creado sin categoría")
                     plato.codigo = f"PLT_{plato.id}"
@@ -148,3 +140,19 @@ class Ingrediente(models.Model):
         column2='rel_platos',
         string='Platos que lo contienen'
     )
+
+class Categoria(models.Model):
+    _name = 'gestion_restaurante_valeria.categoria'
+    _description = 'Modelo para gestionar las categorías de platos'
+
+    name = fields.Char(string = "Nombre de la Categoría", required=True)
+    description = fields.Text(string = "Descripción de la categoría")
+    platos_ids = fields.One2many('gestion_restaurante_valeria.plato', 'categoria_id', string='Platos pertenecientes a esta categoría')
+
+class Chef(models.Model):
+    _name = 'gestion_restaurante_valeria.chef'
+    _description = 'Modelo para gestionar los chefs del restaurante'
+
+    name = fields.Char(string="Nombre del Chef", required=True)
+    especialidad = fields.Many2one('gestion_restaurante_valeria.categoria', string="Especialidad del Chef")
+    platos_ids = fields.One2many('gestion_restaurante_valeria.plato', 'chef_id', string='Platos asignados al Chef')
