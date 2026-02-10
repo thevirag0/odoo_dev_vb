@@ -17,21 +17,7 @@ class Plato(models.Model):
     categoria_id = fields.Many2one('gestion_restaurante_valeria.categoria', string="Categoría", required=True)
     chef_id = fields.Many2one('gestion_restaurante_valeria.chef', string = 'Chef responsable')
     codigo = fields.Char(string="Código", required=True, compute="_get_codigo", readonly=True)
-
-    @api.depends('categoria_id')
-    def _get_codigo(self):  
-        for plato in self:
-            try:
-                _logger.debug(f"Generando código para plato ID: {plato.id}")
-                if plato.categoria_id:
-                    plato.codigo = f"{plato.categoria_id.name[:3].upper()}_{plato.id}" 
-                else:
-                    _logger.warning(f"Plato {plato.id} creado sin categoría")
-                    plato.codigo = f"PLT_{plato.id}"
-                _logger.info(f"Plato '{plato.name}' creado con precio {plato.price}")
-            except Exception as e:
-                raise ValidationError(f"No se pudo generar el código: {str(e)}")
-
+    chef_especializado = fields.Many2one('gestion_restaurante_valeria.chef', string = "Chef especializado", compute='compute_chef_especializado', store=True)
     menu = fields.Many2one(
         'gestion_restaurante_valeria.menu',
         string='Menú',
@@ -45,15 +31,42 @@ class Plato(models.Model):
         string='Ingredientes'
     )
     precio_iva = fields.Float(string="Precio con IVA", compute="_compute_precio_iva")
+    descuento = fields.Float(string="Descuento (%)")
+    precio_final = fields.Float(string="Precio Final", compute="_compute_precio_final", store=True)
+    especialidad_chef = fields.Many2one('gestion_restaurante_valeria.categoria', string = "Especialidad del chef asignado", related = chef_id.especialidad, readonly=True)
     
+    #método para asignar chef
+    @api.depends('categoria_id')
+    def _compute_chef_especializado(self): #TODO: ESTOY AQUIIIII
+        for chef in self:
+            try:
+                _logger.debug(f"Buscando chef especializado...")
+                if chef.categoria_id:
+                    chef.chef_especializado = self.env['gestion_restaurante_valeria.chef'].search([('especialidad', '=', chef.categoria_id.id)], limit=1)
+                    if not chef.chef_especializado:
+                        _logger.warning(f"No se encontró chef especializado para la categoría {chef.categoria_id.name}")
+            except Exception as e:
+                raise ValidationError(f"Error al asignar chef: {str(e)}")       
+                
+    @api.depends('categoria_id')
+    def _get_codigo(self):  
+        for plato in self:
+            try:
+                _logger.debug(f"Generando código para plato ID: {plato.id}")
+                if plato.categoria_id:
+                    plato.codigo = f"{plato.categoria_id.name[:3].upper()}_{plato.id}" 
+                else:
+                    _logger.warning(f"Plato {plato.id} creado sin categoría")
+                    plato.codigo = f"PLT_{plato.id}"
+                _logger.info(f"Plato '{plato.name}' creado con precio {plato.price}")
+            except Exception as e:
+                raise ValidationError(f"No se pudo generar el código: {str(e)}")
+    #método para añadir iva al precio
     @api.depends('price')
     def _compute_precio_iva(self):
         for plato in self:
             plato.precio_iva = plato.price * 1.10   
-    
-    descuento = fields.Float(string="Descuento (%)")
-    precio_final = fields.Float(string="Precio Final", compute="_compute_precio_final", store=True)
-    
+    #método para calcular descuento
     @api.depends('price', 'descuento')
     def _compute_precio_final(self):
         for plato in self:
@@ -65,14 +78,12 @@ class Plato(models.Model):
             else:
                 _logger.error(f"Error calculando precio para plato {plato.id}: precio no definido")
                 plato.precio_final = 0.0
-
     # método para validar precio
     @api.constrains('price')
     def _check_price(self):
         for plato in self:
             if plato.price < 0:
                 raise ValidationError("El precio no puede ser negativo.")
-
     # método para validar tiempo de preparación - rangos
     @api.constrains('preparation_time')
     def _check_prep_time(self):
@@ -148,7 +159,17 @@ class Categoria(models.Model):
     name = fields.Char(string = "Nombre de la Categoría", required=True)
     description = fields.Text(string = "Descripción de la categoría")
     platos_ids = fields.One2many('gestion_restaurante_valeria.plato', 'categoria_id', string='Platos pertenecientes a esta categoría')
+    ingredientes_comunes_ids = fields.Many2many('gestion_restaurante_valeria.ingrediente', string="Ingredientes comunes en esta categoría", compute = "_compute_ingredientes_comunes")
 
+    @api.depends('platos_ids', 'platos_ids.rel_ingredientes')
+    def _compute_ingredientes_comunes(self):
+       for categoria in self:
+           ingredientes_acumulados = self.env['gestion_restaurante_valeria.ingrediente']
+           for plato in categoria.platos_ids:
+                ingredientes_acumulados = ingredientes_acumulados + plato.rel_ingredientes
+           categoria.ingredientes_comunes_ids = ingredientes_acumulados
+           
+     # modelo chef
 class Chef(models.Model):
     _name = 'gestion_restaurante_valeria.chef'
     _description = 'Modelo para gestionar los chefs del restaurante'

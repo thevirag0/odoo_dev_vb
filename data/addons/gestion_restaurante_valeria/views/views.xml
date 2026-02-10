@@ -1,9 +1,9 @@
-  <!-- contenedor principal. todo debe ir dentro de estas etiquetas -->
+<!-- contenedor principal. todo debe ir dentro de estas etiquetas -->
 <odoo>
   <data>
     <!-- explicit list view definition -->
-  
-  <!-- vista de la lista. aquí aparece todo lo que se defina en la tabla -->
+
+    <!-- vista de la lista. aquí aparece todo lo que se defina en la tabla -->
     <record model="ir.ui.view" id="gestion_restaurante_valeria.list">
       <field name="name">Restaurante Valeria</field>
       <field name="model">gestion_restaurante_valeria.plato</field>
@@ -14,7 +14,8 @@
           <field name="price"/>
           <field name="preparation_time"/>
           <field name="available"/>
-          <field name="category"/>
+          <field name="categoria_id" widget="Many2one"/>
+          <field name="chef_id" widget="many2one"/>
           <field name="menu" widget="many2one"/>
           <field name="rel_ingredientes" widget="many2many_tags"/>
         </list>
@@ -22,104 +23,106 @@
     </record>
 
     <!-- Vista de Formulario -->
-<record model="ir.ui.view" id="gestion_restaurante_valeria_form">
-    <field name="name">gestion_restaurante_valeria.form</field>
-    <field name="model">gestion_restaurante_valeria.plato</field>
-    <field name="arch" type="xml">
+    <record model="ir.ui.view" id="gestion_restaurante_valeria_form">
+      <field name="name">gestion_restaurante_valeria.form</field>
+      <field name="model">gestion_restaurante_valeria.plato</field>
+      <field name="arch" type="xml">
         <form>
-            <sheet>
-                <group col="2">
-                    <!-- col 1 -->
-                    <field name="codigo" readonly="1"/>
-                     <field name="name"/>
-                    <field name="description"/>
-                    <field name="price"/>
-                    
-                    <!--col2-->
-                    <field name="precio_iva" readonly="1"/>
-                    <field name="descuento"/>
-                    <field name="precio_final" readonly="1"/>
-                    <field name="preparation_time"/>
+          <sheet>
+            <group col="2">
+              <!-- col 1 -->
+              <field name="codigo" readonly="1"/>
+              <field name="name"/>
+              <field name="description"/>
+              <field name="price"/>
 
-                    <!-- fila siguiente -->
-                    <field name="available"/>
-                    <field name="category"/>
-                    <field name="menu" widget="many2one"/>
-                    <field name="rel_ingredientes" widget="many2many_tags"/>
-                </group>
-            </sheet>
+              <!--col2-->
+              <field name="precio_iva" readonly="1"/>
+              <field name="descuento"/>
+              <field name="precio_final" readonly="1"/>
+              <field name="preparation_time"/>
+
+              <!-- fila siguiente -->
+              <field name="available"/>
+              <field name="categoria_id" widget="one2many"/>
+              <field name="menu" widget="many2one"/>
+              <field name="rel_ingredientes" widget="many2many_tags"/>
+              <field name="chef_id" widget="many2one"/>
+              <field name="especialidad_chef" readonly="1"/>
+            </group>
+          </sheet>
         </form>
-    </field>
-</record>
+      </field>
+    </record>
 
-  <!-- Vista de lista de los menús -->
-  <record model="ir.ui.view" id="menu_list_view">
-    <field name="name">gestion_restaurante_valeria.menu.list </field>
-    <field name="model">gestion_restaurante_valeria.menu</field>
-    <field name="arch" type="xml">
-      <list>
-        <field name="name"/>
-        <field name="precio_total"/>
-        <field name="fecha_inicio"/>
-        <field name="fecha_fin"/>
-        <field name="activo"/>
-      </list>
-    </field>
-  </record>
-
-  <!-- Esto es la vista FORMULARIO de menús -->
-<record model="ir.ui.view" id="menu_form_view">
-  <field name="name">gestion_restaurante_valeria.menu.form</field>
-  <field name="model">gestion_restaurante_valeria.menu</field>
-  <field name="arch" type="xml">
-    <form>
-      <sheet>
-        <group col="2">
+    <!-- Vista de lista de los menús -->
+    <record model="ir.ui.view" id="menu_list_view">
+      <field name="name">gestion_restaurante_valeria.menu.list </field>
+      <field name="model">gestion_restaurante_valeria.menu</field>
+      <field name="arch" type="xml">
+        <list>
           <field name="name"/>
-          <field name="description"/>
-          <field name="precio_total" readonly="1"/>
+          <field name="precio_total"/>
           <field name="fecha_inicio"/>
           <field name="fecha_fin"/>
           <field name="activo"/>
-        </group>
-        <field name="platos_ids" widget="one2many"/>
-      </sheet>
-    </form>
-  </field>
-</record>
+        </list>
+      </field>
+    </record>
 
-<!-- Vista de lista de los ingredientes -->
-  <record model="ir.ui.view" id="ingrediente_list_view">
-    <field name="name">gestion_restaurante_valeria.ingrediente.list </field>
-    <field name="model">gestion_restaurante_valeria.ingrediente</field>
-    <field name="arch" type="xml">
-      <list>
-        <field name="name"/>
-        <field name="descripcion"/>
-        <field name="es_alergeno"/>
-      </list>
-    </field>
-  </record>
+    <!-- Esto es la vista FORMULARIO de menús -->
+    <record model="ir.ui.view" id="menu_form_view">
+      <field name="name">gestion_restaurante_valeria.menu.form</field>
+      <field name="model">gestion_restaurante_valeria.menu</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group col="2">
+              <field name="name"/>
+              <field name="description"/>
+              <field name="precio_total" readonly="1"/>
+              <field name="fecha_inicio"/>
+              <field name="fecha_fin"/>
+              <field name="activo"/>
+            </group>
+            <field name="platos_ids" widget="one2many"/>
+          </sheet>
+        </form>
+      </field>
+    </record>
 
-  <!-- Esto es la vista FORMULARIO de ingredientes -->
-<record model="ir.ui.view" id="ingrediente_form_view">
-  <field name="name">gestion_restaurante_valeria.ingrediente.form</field>
-  <field name="model">gestion_restaurante_valeria.ingrediente</field>
-  <field name="arch" type="xml">
-    <form>
-      <sheet>
-        <!-- "col='2'" significa 2 columnas -->
-        <group col="2">
-          <!-- Cada field es un campo del modelo -->
+    <!-- Vista de lista de los ingredientes -->
+    <record model="ir.ui.view" id="ingrediente_list_view">
+      <field name="name">gestion_restaurante_valeria.ingrediente.list </field>
+      <field name="model">gestion_restaurante_valeria.ingrediente</field>
+      <field name="arch" type="xml">
+        <list>
           <field name="name"/>
           <field name="descripcion"/>
           <field name="es_alergeno"/>
-          <field name="rel_platos" widget="many2many_tags"/>
-        </group>
-      </sheet>
-    </form>
-  </field>
-</record>
+        </list>
+      </field>
+    </record>
+
+    <!-- Esto es la vista FORMULARIO de ingredientes -->
+    <record model="ir.ui.view" id="ingrediente_form_view">
+      <field name="name">gestion_restaurante_valeria.ingrediente.form</field>
+      <field name="model">gestion_restaurante_valeria.ingrediente</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <!-- 2 columnas -->
+            <group col="2">
+              <!-- Cada field es un campo del modelo -->
+              <field name="name"/>
+              <field name="descripcion"/>
+              <field name="es_alergeno"/>
+              <field name="rel_platos" widget="many2many_tags"/>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
 
 
 
@@ -150,32 +153,22 @@
     <!-- server action to the one above -->
 
 
-<!-- botones del menú.-->
+    <!-- botones del menú.-->
     <!-- Top menu item -->
 
     <menuitem name="Restaurante Valeria" id="gestion_restaurante_valeria.menu_root"/>
     <!-- submenu -->
     <menuitem name="Menú" id="gestion_restaurante_valeria.menu_main" parent="gestion_restaurante_valeria.menu_root"/>
     <!-- menu categories -->
-     <menuitem name="Plato" id="gestion_restaurante_valeria.plato_list" 
-     parent="gestion_restaurante_valeria.menu_main" 
-     action="gestion_restaurante_valeria.action_window"/>
+    <menuitem name="Plato" id="gestion_restaurante_valeria.plato_list" parent="gestion_restaurante_valeria.menu_main" action="gestion_restaurante_valeria.action_window"/>
     <!--menu de menus-->
-      <menuitem name="Menús"
-                id="menu_menus"
-                parent="gestion_restaurante_valeria.menu_main"
-                action="menu_action"/>
+    <menuitem name="Menús" id="menu_menus" parent="gestion_restaurante_valeria.menu_main" action="menu_action"/>
     <!-- menu de ingredientes -->
-      <menuitem name="Ingredientes"
-                id="menu_ingredientes"
-                parent="gestion_restaurante_valeria.menu_main"
-                action="ingrediente_action"/>    
+    <menuitem name="Ingredientes" id="menu_ingredientes" parent="gestion_restaurante_valeria.menu_main" action="ingrediente_action"/>
     <!-- actions -->
-<!--
-    <menuitem name="List" id="gestion_restaurante_valeria.menu_1_list" parent="gestion_restaurante_valeria.menu_1"
-              action="gestion_restaurante_valeria.action_window"/>
-    <menuitem name="Server to list" id="gestion_restaurante_valeria" parent="gestion_restaurante_valeria.menu_2"
-              action="gestion_restaurante_valeria.action_server"/>
+    <!--
+    <menuitem name="List" id="gestion_restaurante_valeria.menu_1_list" parent="gestion_restaurante_valeria.menu_1" action="gestion_restaurante_valeria.action_window"/>
+    <menuitem name="Server to list" id="gestion_restaurante_valeria" parent="gestion_restaurante_valeria.menu_2" action="gestion_restaurante_valeria.action_server"/>
 -->
   </data>
 </odoo>
