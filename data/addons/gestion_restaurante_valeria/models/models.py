@@ -14,10 +14,10 @@ class Plato(models.Model):
     price = fields.Float(string="Precio", required=True)
     preparation_time = fields.Integer(string="Tiempo de Preparación (minutos)", required=False, help="Tiempo estimado de preparación del plato")
     available = fields.Boolean(string="Disponible", default=True, required=True, help="Indica si el plato puede ser preparado en este momento")
-    categoria_id = fields.Many2one('gestion_restaurante_valeria.categoria', string="Categoría", required=True)
+    categoria_id = fields.Many2one('gestion_restaurante_valeria.categoria', string="Categoría", required=False)
     chef_id = fields.Many2one('gestion_restaurante_valeria.chef', string = 'Chef responsable')
     codigo = fields.Char(string="Código", required=True, compute="_get_codigo", readonly=True)
-    chef_especializado = fields.Many2one('gestion_restaurante_valeria.chef', string = "Chef especializado", compute='compute_chef_especializado', store=True)
+    chef_especializado = fields.Many2one('gestion_restaurante_valeria.chef', string = "Chef especializado", compute="_compute_chef_especializado", store=True)
     menu = fields.Many2one(
         'gestion_restaurante_valeria.menu',
         string='Menú',
@@ -33,7 +33,7 @@ class Plato(models.Model):
     precio_iva = fields.Float(string="Precio con IVA", compute="_compute_precio_iva")
     descuento = fields.Float(string="Descuento (%)")
     precio_final = fields.Float(string="Precio Final", compute="_compute_precio_final", store=True)
-    especialidad_chef = fields.Many2one('gestion_restaurante_valeria.categoria', string = "Especialidad del chef asignado", related = chef_id.especialidad, readonly=True)
+    especialidad_chef = fields.Many2one('gestion_restaurante_valeria.categoria', string = "Especialidad del chef asignado", related = 'chef_id.especialidad', readonly=True)
     
     #método para asignar chef
     @api.depends('categoria_id')
