@@ -11,10 +11,22 @@ class Plato(models.Model):
 
     name = fields.Char(string="Nombre del Plato", required=True)
     description = fields.Text(string="Ingredientes/Descripción")
-    price = fields.Float(string="Precio", required=True)
+    price = fields.Float(string="Precio", required=True, default=5.0)
     preparation_time = fields.Integer(string="Tiempo de Preparación (minutos)", required=False, help="Tiempo estimado de preparación del plato")
     available = fields.Boolean(string="Disponible", default=True, required=True, help="Indica si el plato puede ser preparado en este momento")
-    categoria_id = fields.Many2one('gestion_restaurante_valeria.categoria', string="Categoría", required=False)
+
+    def _get_categoria_defecto(self):
+        return self.env['gestion_restaurante_valeria.categoria'].search(
+            [('name', '=', 'Sin Clasificar')],
+            limit=1
+        )
+
+    categoria_id = fields.Many2one(
+        'gestion_restaurante_valeria.categoria',
+        string="Categoría",
+        required=False,
+        default=_get_categoria_defecto
+    )
     chef_id = fields.Many2one('gestion_restaurante_valeria.chef', string = 'Chef responsable')
     codigo = fields.Char(string="Código", required=True, compute="_get_codigo", readonly=True)
     chef_especializado = fields.Many2one('gestion_restaurante_valeria.chef', string = "Chef especializado", compute="_compute_chef_especializado", store=True)
@@ -31,9 +43,11 @@ class Plato(models.Model):
         string='Ingredientes'
     )
     precio_iva = fields.Float(string="Precio con IVA", compute="_compute_precio_iva")
-    descuento = fields.Float(string="Descuento (%)")
+    descuento = fields.Float(string="Descuento (%)", default=0.0)
     precio_final = fields.Float(string="Precio Final", compute="_compute_precio_final", store=True)
     especialidad_chef = fields.Many2one('gestion_restaurante_valeria.categoria', string = "Especialidad del chef asignado", related = 'chef_id.especialidad', readonly=True)
+    fecha_alta = fields.Date(string="Fecha de alta", default=lambda self: fields.Date.today())
+    
     
     #método para asignar chef
     @api.depends('categoria_id')
@@ -91,7 +105,8 @@ class Plato(models.Model):
             if plato.preparation_time:
                 if plato.preparation_time < 1 or plato.preparation_time > 240:
                     raise ValidationError("El tiempo debe ser 1-240 minutos")
-
+                
+    # método para asignar categoria "sin clasificar"
 
 class Menu(models.Model):
     _name = 'gestion_restaurante_valeria.menu'
@@ -100,15 +115,26 @@ class Menu(models.Model):
     name = fields.Char(string="Nombre", required=True)
     description = fields.Text(string="Descripción")
     fecha_inicio = fields.Date(string="Fecha de inicio", required=True)
-    fecha_fin = fields.Date(string="Fecha de final")
-    activo = fields.Boolean(string="Activo", default=True)
+    fecha_fin = fields.Date(string="Fecha de final", compute="_compute_fecha_fin", store=True)
+    activo = fields.Boolean(string="Activo", default=False)
     platos_ids = fields.One2many(
         'gestion_restaurante_valeria.plato',
         'menu',
         string='Platos del Menú'
     )
     precio_total = fields.Float(string="Precio Total", compute="_compute_precio_total", store=True)
-
+    creado_por = fields.Many2one('res.users', string="Creado por", default=lambda self: self.env.user, readonly=True)
+    dias_disponible = fields.Integer(string="Días disponibles", default=7)
+    
+    # método para calcular fecha fin del menú
+    @api.depends('fecha_inicio', 'dias_disponible')
+    def _compute_fecha_fin(self):
+        for menu in self:
+            if menu.fecha_inicio:
+                menu.fecha_fin = fields.Date.add(menu.fecha_inicio, days=menu.dias_disponible or 0)
+            else:
+                menu.fecha_fin = False
+    
     @api.depends('platos_ids', 'platos_ids.precio_final')
     def _compute_precio_total(self):
         for menu in self:
